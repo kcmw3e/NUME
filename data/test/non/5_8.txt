@@ -1,0 +1,21 @@
+So far it's working quite well. I'm pretty pleased with the results. It seems to have some trouble discerning positivity, I think. That's not necessarily a bad thing, however, as I think this would be more of a tool meant for telling you when you might be too harsh, not too nice. Anyway, we'll see if this turns out well. I hope so!
+
+Update 1: Initial wording above didn't go so well. I'm adding some more positive words to see if I can swing the results intentionally...
+
+Swing words tests: A really good thing. A really really good thing. Positive. Plus. Great.
+
+Update 2: The above wasn't enough. Attempting more...
+
+Swing words: Greatness. Amazing. Sweet. Superb. Wondrous. Beautiful.
+
+Update 3: The second set did the trick. Will this update make it worse?
+
+Update 4: It seems that it did. I think there could possibly be more polarity/weight in negativity. Let's try more swing words...
+
+Swing words: Nice. Kind. Loving. Loved. Love. So greats. Greatsness. Did a great job.
+
+Update 5: The probabilities are extremely close. I wonder if having long tests makes it hard (like this one). It's entirely possible. let's try again.
+
+Update 6: The probabilities seem to still be pretty close. I'm not sure what other swing words I could try to sway the vote. Maybe I need to try to add a weighting on frequency of words, not just existence?
+
+Update 7: After update 6, the probabilities grew apart a decent margin (really hard to say since they're so small :P). I think longer documents make it more difficult. I think doing this on a sentence-by-sentnce system would be better (or maybe a paragraph-by-paragraph). It would break a longer document like this into more short parts like what a review looks like, so that could yield better results.
