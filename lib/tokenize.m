@@ -1,3 +1,13 @@
+% Takes a string and returns the word tokens as a string array column vector.
+% Punctuation, whitespace, and other extra characters are removed (see an
+% ascii chart for which characters these are). The string is split at
+% whitespace characters. The output is guaranteed to be in the same order
+% the tokens appear in the original string. All strings are made lowercase.
+%
+% Example:
+%   str = "This is a string! It has whitespace and punctuation...";
+%   tokens = tokenize(str);
+%   tokens == ["this", "is", "a", "string", "it", "has", "whitespace", "and", "punctuation"];
 function tokens = tokenize(str)
     arguments
         str string;
@@ -6,7 +16,7 @@ function tokens = tokenize(str)
     persistent unwanted; % same unwanted characters every time called, see an ascii chart for list of characters by decimal number
     if (isempty(unwanted))
         unwanted = split(char([1:31, 33:64, 91:96, 123:126]), ''); % unwanted punctuation, etc
-        unwanted = unwanted(2: end-1); % first and last are extra empty strings so begone with them
+        unwanted = unwanted(2: end-1); % first and last are extra empty strings
     end
     
     chars = char(str);

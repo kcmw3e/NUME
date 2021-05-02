@@ -1,4 +1,13 @@
 function acc = test(folder, pcount, pprob, ncount, nprob, n)
+    arguments
+        folder
+        pcount
+        pprob
+        ncount
+        nprob
+        n
+    end
+    
     files = dir(fullfile(folder, '*.txt')); % get all the text file names
     
     acc = zeros(size(files));
