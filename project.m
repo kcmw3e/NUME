@@ -7,21 +7,21 @@ clc;
 % Casey Walker
 
 % Training steps
-% get string from file
-% tokenize string (remove unwatned punctuation, separate into words)
-% get unique words
-% remove unwanted words
-% add new words to vocabulary
-% count words in file
-% add count to map
-% calculate probabilities
+%  get string from file
+%  tokenize string (remove unwatned punctuation, separate into words)
+%  get unique words
+%  remove unwanted words
+%  add new words to vocabulary
+%  count words in file
+%  add count to map
+%  calculate probabilities
 
 % Testing steps
-% get string from file
-% tokenize string (remove unwatned punctuation, separate into words)
-% get unique words
-% remove unwanted words
-% calculate probabilites based on training data
+%  get string from file
+%  tokenize string (remove unwatned punctuation, separate into words)
+%  get unique words
+%  remove unwanted words
+%  calculate probabilites based on training data
 
 addpath(fullfile(pwd, 'lib'));
 

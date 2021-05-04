@@ -1,3 +1,4 @@
+% Calculate probabilities based on Naive Bayes assumptions for a voabulary.
 % vocab is a subset of a larger vocabulary corresponding to a given class
 % of vocabulary. count is the frequency of each word in vocab appearing in
 % all the texts that make up vocab. n is the total number of terms in the

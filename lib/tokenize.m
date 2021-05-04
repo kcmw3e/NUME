@@ -23,7 +23,7 @@ function tokens = tokenize(str)
     chars = lower(chars); % turn everything to lower case for uniformity across reviews
     chars = strip(chars); % remove bad whitespaces
     chars = split(chars); % tokenize into words
-
+    
     tokens = erase(chars, unwanted); % remove the unwanted characters
     tokens = join(tokens); % put it all into one char vector
     tokens = split(string(tokens{1})); % make tokens a string array of the words
