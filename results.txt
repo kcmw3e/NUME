@@ -1,0 +1,234 @@
+
+Results
+  Model parameters
+    n-grams:    1
+    fluffy:     0
+    binary:     1
+    smoothing:  1
+    min freq:   1
+  Positive Accuracy:    77.112%
+  Negative Accuracy:    88.712%
+  Non-review Accuracy:  83.3333%
+  Testing time:  186.417s
+
+
+Results
+  Model parameters
+    n-grams:    1
+    fluffy:     0
+    binary:     0
+    smoothing:  1
+    min freq:   1
+  Positive Accuracy:    75.92%
+  Negative Accuracy:    88.376%
+  Non-review Accuracy:  83.3333%
+  Testing time:  181.023s
+
+
+Results
+  Model parameters
+    n-grams:    1
+    fluffy:     0
+    binary:     1
+    smoothing:  1
+    min freq:   10
+  Positive Accuracy:    77.616%
+  Negative Accuracy:    86.04%
+  Non-review Accuracy:  83.3333%
+  Testing time:  168.326s
+
+
+Results
+  Model parameters
+    n-grams:    1
+    fluffy:     0
+    binary:     0
+    smoothing:  1
+    min freq:   10
+  Positive Accuracy:    76.28%
+  Negative Accuracy:    86.352%
+  Non-review Accuracy:  83.3333%
+  Testing time:  164.669s
+
+
+Results
+  Model parameters
+    n-grams:    1
+    fluffy:     0
+    binary:     1
+    smoothing:  1
+    min freq:   50
+  Positive Accuracy:    82.128%
+  Negative Accuracy:    78.16%
+  Non-review Accuracy:  83.3333%
+  Testing time:  150.667s
+
+
+Results
+  Model parameters
+    n-grams:    1
+    fluffy:     0
+    binary:     0
+    smoothing:  1
+    min freq:   50
+  Positive Accuracy:    80%
+  Negative Accuracy:    80.152%
+  Non-review Accuracy:  83.3333%
+  Testing time:  160.894s
+
+
+Results
+  Model parameters
+    n-grams:    2
+    fluffy:     0
+    binary:     1
+    smoothing:  1
+    min freq:   1
+  Positive Accuracy:    78.552%
+  Negative Accuracy:    93.056%
+  Non-review Accuracy:  83.3333%
+  Testing time:  240.524s
+
+
+Results
+  Model parameters
+    n-grams:    2
+    fluffy:     0
+    binary:     0
+    smoothing:  1
+    min freq:   1
+  Positive Accuracy:    78.216%
+  Negative Accuracy:    93.08%
+  Non-review Accuracy:  66.6667%
+  Testing time:  239.988s
+
+
+Results
+  Model parameters
+    n-grams:    2
+    fluffy:     0
+    binary:     1
+    smoothing:  1
+    min freq:   10
+  Positive Accuracy:    93.768%
+  Negative Accuracy:    69.856%
+  Non-review Accuracy:  83.3333%
+  Testing time:  177.937s
+
+
+Results
+  Model parameters
+    n-grams:    2
+    fluffy:     0
+    binary:     0
+    smoothing:  1
+    min freq:   10
+  Positive Accuracy:    92.744%
+  Negative Accuracy:    72.168%
+  Non-review Accuracy:  83.3333%
+  Testing time:  181.249s
+
+
+Results
+  Model parameters
+    n-grams:    2
+    fluffy:     0
+    binary:     1
+    smoothing:  1
+    min freq:   50
+  Positive Accuracy:    96.84%
+  Negative Accuracy:    40.04%
+  Non-review Accuracy:  83.3333%
+  Testing time:  152.416s
+
+
+Results
+  Model parameters
+    n-grams:    2
+    fluffy:     0
+    binary:     0
+    smoothing:  1
+    min freq:   50
+  Positive Accuracy:    96.56%
+  Negative Accuracy:    42.816%
+  Non-review Accuracy:  83.3333%
+  Testing time:  151.377s
+
+
+Results
+  Model parameters
+    n-grams:    3
+    fluffy:     0
+    binary:     1
+    smoothing:  1
+    min freq:   1
+  Positive Accuracy:    71.048%
+  Negative Accuracy:    92.016%
+  Non-review Accuracy:  50%
+  Testing time:  198.795s
+
+
+Results
+  Model parameters
+    n-grams:    3
+    fluffy:     0
+    binary:     0
+    smoothing:  1
+    min freq:   1
+  Positive Accuracy:    71.04%
+  Negative Accuracy:    92.008%
+  Non-review Accuracy:  50%
+  Testing time:  205.634s
+
+
+Results
+  Model parameters
+    n-grams:    3
+    fluffy:     0
+    binary:     1
+    smoothing:  1
+    min freq:   10
+  Positive Accuracy:    99.984%
+  Negative Accuracy:    2.312%
+  Non-review Accuracy:  66.6667%
+  Testing time:  144.215s
+
+
+Results
+  Model parameters
+    n-grams:    3
+    fluffy:     0
+    binary:     0
+    smoothing:  1
+    min freq:   10
+  Positive Accuracy:    99.984%
+  Negative Accuracy:    2.536%
+  Non-review Accuracy:  66.6667%
+  Testing time:  142.876s
+
+
+Results
+  Model parameters
+    n-grams:    3
+    fluffy:     0
+    binary:     1
+    smoothing:  1
+    min freq:   50
+  Positive Accuracy:    100%
+  Negative Accuracy:    0.152%
+  Non-review Accuracy:  50%
+  Testing time:  140.646s
+
+
+Results
+  Model parameters
+    n-grams:    3
+    fluffy:     0
+    binary:     0
+    smoothing:  1
+    min freq:   50
+  Positive Accuracy:    100%
+  Negative Accuracy:    0.184%
+  Non-review Accuracy:  50%
+  Testing time:  138.338s
+

@@ -1,54 +1,32 @@
-% Tests a dataset based on Naive Bayes assumption. folder is the path to a
-% directory that should contain a set of text files. Each text file will be
-% cleaned according to the functions tokenize() and rm_fluff() -- see
-% respective *.m files for details. The text files should be named
-% with a unique id followed by an underscore and a rating out of 10 (e.g.
-% 123_9 is a file with id 123 and rating 9 out of 10). Positive files are
-% considered anything with a rating over 5, and negative anything 5 and
-% below, but for best practices it's best to test with items that are more
-% polarized (>=6 and <=4).
-% There are 6 inputs:
-%   folder --> path to a directory containing text files as described above
-%   pcount --> array of indexed word frequencies (see train.m)for
-%              positive vocabulary
-%   pprob  --> a MATLAB containers.Map object mapping words from the
-%              positive vocabulary to the pre-computed Naive Bayes
-%              probabilities
-%   ncount --> negative counterpart to pcount
-%   nprob  --> negative counterpart to pprob
-%   n      --> total number of terms in combined vocabulary (pos + neg)
-% The returned acc is the accuracy with which the Naive Bayes pre-compiled
-% probabilites correctly predicted the data to be positive or negatively
-% rated. This is simply computed as (number correct)/(total number).
-%
-% Example:
-%   % assuming the following dataset
-%   % myfolder/| train/| pos/| t1.txt --> 'Hello great world!'
-%   %                  | neg/| t2.txt --> 'some bad text'
-%   %                        | t3.txt --> 'Goodbye world :('
-%   %          | test/ 0_8.txt --> 'A great day!'
-%
-%   [pvocab, pcount, ptexts, pmap] = train('[path_to]/myfolder/train/pos');
-%   [nvocab, ncount, ntexts, nmap] = train('[path_to]/myfolder/train/neg');
-%   vocab = union(pvocab, nvocab);
-%   n = length(vocab);
-%   pprob = nb_probs(pvocab, pcount, n);
-%   nprob = nb_probs(nvocab, ncount, n);
-%   acc = test('[path_to]/myfolder/test', pcount, pprob, ncount, nprob, n);
-%   % acc is then whether or not the data predicted 0_8.txt to be positive (should be 1)
-function acc = test(folder, pcount, pprob, ncount, nprob, n)
+
+function acc = test(folder, model)
     arguments
         folder string;
-        pcount double;
-        pprob containers.Map;
-        ncount double;
-        nprob containers.Map;
-        n double;
+        model struct;
     end
+    
+    collections = model.collections;
+    ngrams = model.ngrams;
+    n = model.n;
+    keepfluff = model.keepfluff;
+    bin = model.bin;
+    a = model.laplace;
+    
+    pos = collections("pos");
+    neg = collections("neg");
+    
+    posgrams = pos{1};
+    posprobs = pos{2};
+    
+    neggrams = neg{1};
+    negprobs = neg{2};
+    
+    posd = sum(cell2mat(values(posgrams))) + a*length(ngrams);
+    negd = sum(cell2mat(values(neggrams))) + a*length(ngrams);
     
     files = dir(fullfile(folder, '*.txt')); % get all the text file names
     
-    acc = zeros(size(files)); % preallocate array for efficiency
+    acc = zeros(length(files), 1); % preallocate array for efficiency
     for i = 1:length(files) % loop through each file and clean/tokenize and test it
         file = files(i);
         info = string(split(erase(file.name, '.txt'), '_')); % file names should be '[id]_[rating].txt'
@@ -56,26 +34,27 @@ function acc = test(folder, pcount, pprob, ncount, nprob, n)
         
         txt = fileread(fullfile(file.folder, file.name)); % string inside the text file
         
-        % clean the text
-        tokens = tokenize(txt);
-        uniques = unique(tokens);
-        uniques = rm_fluff(uniques);
+        tokens = tokenize(txt); % all the words in txt
+        
+        if (~keepfluff); tokens = rm_fluff(tokens); end % remove fluffwords
+        
+        grams = findgrams(tokens, n); % find the n-grams of the text without fluff
         
         posp = 0; % probability that text is pos class
         negp = 0; % probability that it's neg class
-        for j = 1:length(uniques) % loop through every unique word, count how many times it appears, calculate probabilities
-            word = uniques(j);
+        for j = 1:size(grams, 2) % loop through every gram, count how many times it appears, calculate probabilities
+            g = grams(:, j);
+            c = hasgrams(tokens, g);
+            if (bin); c = c > 0; end
+            k = join(g); % map keys have to be character vectors
             
-            % if the word is in the map, it has a probability already, if
-            % it isn't then the probabilty is give by 1/(sum(pcount) + n)
-            % note that log(P) is used to compute probabilities together
-            % since they will be very small and would be interpreted as 0
-            % after a few multiplications
-            if (~isKey(pprob, word)); posp = posp + log(1/(sum(pcount) + n));
-            else; posp = posp + log(pprob(word)); end
+            if (~isKey(posprobs, k)); dp = log(a/posd);
+            else; dp = log(posprobs(k)); end
+            posp = posp + c*dp;
             
-            if (~isKey(nprob, word)); negp = negp + log(1/(sum(ncount) + n));
-            else; negp = negp + log(nprob(word)); end
+            if (~isKey(negprobs, k)); dn = log(a/negd);
+            else; dn = log(negprobs(k)); end
+            negp = negp + c*dn;
         end
 
         % if the prediction was right, document as a 1, otherwise will be

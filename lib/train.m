@@ -1,69 +1,64 @@
-% Trains a dataset based on Naive Bayes assumption. folder is the path to a
-% directory that should contain a set of text files. Each text file will be
-% cleaned according to the functions tokenize() and rm_fluff() -- see
-% respective *.m files for details.
-% There are 4 return values:
-%   vocab --> a string array column vector of all the unique words that
-%             appear in every text in the directory
-%   count --> a column vector of numbers corresponding to the number of
-%             times every word in vocab appears between all of the texts in
-%             the directory
-%   texts --> a cell array column vector consisting of all the string
-%             arrays of tokens from each text file in the directory
-%             (see tokenize.m for how texts are tokenized)
-%   map   --> a MATLAB containers.Map object containing the set of word
-%             tokens found in vocab mapped to the frequencies found in
-%             count
-% Note that the index of a word in vocab corresponds to its frequency in
-% count by the same index. If lookup of the frequency of a given word is
-% needed for many words among a large voabulary, it is best to use map as
-% using vocab and count for this purpose is likely to be extremely
-% inefficient. Also, the order of vocab and texts (and by extension
-% count)is not guaranteed or defined.
-%
-% Example:
-%   % assuming the following dataset
-%   % myfolder/| t1.txt --> 'Hello world!'
-%   %          | t2.txt --> 'some text'
-%   %          | t3.txt --> 'Goodbye world :('
-%
-%   [vocab, count, texts, map] = train('[path_to]/myfolder');
-%   % vocab = ["hello"; "world"; "some"; "text"; "goodbye"] (not necessarily in that order)
-%   % count = [ 1;       2;       1;      1;      1] corresponding to the above vocab
-%   % texts = {["hello"; "world"]; ["some", "text"]; ["goodbye", "world"]}
-%   % map will be a MATLAB containers.Map as described
-function [vocab, count, texts, map] = train(folder)
+
+function model = train(folder, nvArgs)
     arguments
         folder string;
+        nvArgs.n double = 1;
+        nvArgs.keepfluff logical = 0;
+        nvArgs.bin logical = 0;
+        nvArgs.laplace double = 1;
+        nvArgs.minfreq double = 1;
     end
     
-    files = dir(fullfile(folder, '*.txt')); % get all the text file names
+    n = nvArgs.n;
+    keepfluff = nvArgs.keepfluff;
+    bin = nvArgs.bin;
+    a = nvArgs.laplace;
+    minfreq = nvArgs.minfreq;
     
-    texts = cell(size(files)); % preallocate texts cell array for efficiency
-    counts = containers.Map;
-    for i = 1:length(files) % loop through every text file and clean/tokenize it
-        file = files(i);
-        txt = fileread(fullfile(file.folder, file.name)); % string inside the text file
+    dirs = dir(folder);
+    dirs = dirs([dirs.isdir]); % filter out folders
+    dirs = dirs(~ismember({dirs.name}, {'.', '..'})); % ignore current/parent directory
+    
+    ngrams = containers.Map;
+    collections = containers.Map;
+    for i = 1:length(dirs)
+        d = dirs(i);
+        dn = fullfile(d.folder, d.name);
+        files = dir(fullfile(dn, '*.txt'));
         
-        tokens = tokenize(txt); % all the words in txt
-        uniques = unique(tokens); % only unique words
-        uniques = rm_fluff(uniques); % remove fluffwords
-        
-        texts{i} = tokens;
-        
-        for j = 1:length(uniques) % loop through each unique word, count appearances, add it to counts map
-            word = uniques(j);
-            n = sum(word == tokens); % frequency in tokens
-            if (~isKey(counts, word)); counts(word) = 0; end % if it's not already in counts, create an entry for it
-            counts(word) = counts(word) + n; % then add the frequency
+        ng = containers.Map;
+        for j = 1:length(files) % loop through every text file and clean/tokenize it
+            file = files(j);
+            txt = fileread(fullfile(file.folder, file.name)); % string inside the text file
+            
+            tokens = tokenize(txt); % all the words in txt
+            
+            if (~keepfluff); tokens = rm_fluff(tokens); end % remove fluffwords
+            
+            grams = findgrams(tokens, n); % find the n-grams of the text without fluff
+            
+            for k = 1:size(grams, 2) % loop through each n-gram, count appearances, add it to ngrams
+                g = grams(:, k);
+                c = hasgrams(tokens, g);
+                if (bin); c = c > 0; end
+                key = join(g); % keys must be character vectors
+                if (~isKey(ng, key)); ng(key) = 0; end % if it's not already in ngrams, create an entry for it
+                ng(key) = ng(key) + c; % then add the frequency
+            end
         end
+        
+        rminfreq(ng, minfreq);
+        
+        collections(d.name) = ng;
+        ngrams = map_union(ngrams, ng);
     end
     
-    vocab = keys(counts)';
-    count = values(counts)';
+    for i = 1:length(dirs)
+        d = dirs(i);
+        ng = collections(d.name);
+        p = nb_probs(ng, ngrams, a);
+        collections(d.name) = {ng, p};
+    end
     
-    vocab = string(vocab); % keys() gives back cell array of character vectors
-    count = cell2mat(count); % values() gives back cell array of numbers
-    
-    map = counts;
+    model = struct('collections', collections, 'ngrams', ngrams, 'n', n,'keepfluff', keepfluff, 'minfreq', minfreq, 'bin', bin, 'laplace', a);
 end

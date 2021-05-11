@@ -2,28 +2,20 @@
 % 24-311 Numerical Methods, Carnegie Mellon University
 % Casey Walker
 
-% Training steps
-%  get string from file
-%  tokenize string (remove unwatned punctuation, separate into words)
-%  get unique words
-%  remove unwanted words
-%  add new words to vocabulary
-%  count words in file
-%  add count to map
-%  calculate probabilities
+function [acc] = project(nvArgs)
+arguments
+    nvArgs.n double = 1;
+    nvArgs.keepfluff logical = 0;
+    nvArgs.bin logical = 0;
+    nvArgs.laplace double = 1;
+    nvArgs.minfreq double = 1;
+end
 
-% Testing steps
-%  get string from file
-%  tokenize string (remove unwatned punctuation, separate into words)
-%  get unique words
-%  remove unwanted words
-%  calculate probabilites based on training data
-
-function project()
-
-clear;
-close all;
-clc;
+n = nvArgs.n;
+keepfluff = nvArgs.keepfluff;
+bin = nvArgs.bin;
+a = nvArgs.laplace;
+minfreq = nvArgs.minfreq;
 
 addpath(fullfile(pwd, 'lib'));
 
@@ -32,8 +24,16 @@ nlprint("24-311 Numerical Methods, Carnegie Mellon University");
 nlprint("Casey Walker");
 nlprint();
 
+descriptor = sprintf("%ggrams", n);
+if (keepfluff); descriptor = sprintf("%s_fluffy", descriptor); end
+if (bin); descriptor = sprintf("%s_bin", descriptor);
+else; descriptor = sprintf("%s_tf", descriptor); end
+if (minfreq > 1); descriptor = sprintf("%s_%gminf", descriptor, minfreq); end
+descriptor = sprintf("%s_%ga", descriptor, a);
+modelname = sprintf("model_%s.mat", descriptor);
+
 nlprint("Checking for file with pre-computed Naive Bayes probabilities.");
-if (~isfile(fullfile(pwd, "nbps.mat")))
+if (~isfile(fullfile(pwd, modelname)))
     nlprint("  Couldn't find file containing pre-computed Naive Bayes probabilites.");
     nlprint("  Computing them now instead using data from IMDB.")
     
@@ -42,26 +42,20 @@ if (~isfile(fullfile(pwd, "nbps.mat")))
     check_folder(fullfile(pwd, "data/train/neg"));
     
     nlprint("    Training Naive Bayes model from existing IMDB review data.");
-    [pvocab, pcount, ptexts, pmap] = train(fullfile(pwd, "data/train/pos"));
-    [nvocab, ncount, ntexts, nmap] = train(fullfile(pwd, "data/train/neg"));
-    vocab = union(pvocab, nvocab);
     
-    nlprint("    Computing probabilities with data from IMDB reviews.");
-    pP = nb_probs(pvocab, pcount, length(vocab));
-    nP = nb_probs(nvocab, ncount, length(vocab));
+    args = namedargs2cell(nvArgs);
+    model = train(fullfile(pwd, "data/train/"), args{:});
     
     nlprint("    Saving data for future use.");
-    save('nbps', 'pP', 'nP', 'pcount', 'ncount', 'vocab');
-    
+    save(modelname, 'model');
     nlprint("  Done computing Naive Bayes probabilities.");
-else
-    nlprint("  Found file containing model. Loading data...");
-    load(fullfile(pwd, "nbps"));
 end
-nlprint()
 
+nlprint("  Loading model...");
+load(fullfile(pwd, modelname), 'model');
 
 nlprint("Testing model.");
+tic;
 
 nlprint("  Checking for existence of proper folders.");
 check_folder(fullfile(pwd, "data/test/pos"));
@@ -69,16 +63,32 @@ check_folder(fullfile(pwd, "data/test/neg"));
 check_folder(fullfile(pwd, "data/test/non"));
 
 nlprint("  Running tests.");
-pacc = test(fullfile(pwd, "data/test/pos"), pcount, pP, ncount, nP, length(vocab));
-nacc = test(fullfile(pwd, "data/test/neg"), pcount, pP, ncount, nP, length(vocab));
-nonacc = test(fullfile(pwd, "data/test/non"), pcount, pP, ncount, nP, length(vocab));
-nlprint("  Finished testing.");
+pacc = test(fullfile(pwd, "data/test/pos"), model);
+nacc = test(fullfile(pwd, "data/test/neg"), model);
+nonacc = test(fullfile(pwd, "data/test/non"), model);
 
-nlprint("Results:");
-nlprint("  Positive review accuracy: %g%%", pacc*100);
-nlprint("  Negative review accuracy: %g%%", nacc*100);
-nlprint("  None-review accuracy:     %g%%", nonacc*100);
+dt = toc;
+nlprint("  Finished testing.");
+nlprint("See 'results.txt' for results.");
+
+resfile = fopen('results.txt', 'a');
+fprintf(resfile, "\nResults");
+fprintf(resfile, "\n  Model parameters\n" + ...
+                 "    n-grams:   % g\n" + ...
+                 "    fluffy:    % g\n" + ...
+                 "    binary:    % g\n" + ...
+                 "    smoothing: % g\n" + ...
+                 "    min freq:  % g\n",  ...
+                 n, keepfluff, bin, a, minfreq);
+fprintf(resfile, "  Positive Accuracy:   % g%%\n" + ...
+                 "  Negative Accuracy:   % g%%\n" + ...
+                 "  Non-review Accuracy: % g%%\n",  ...
+                 100*pacc, 100*nacc, 100*nonacc);
+fprintf(resfile, "  Testing time: % gs\n", dt);
+fprintf(resfile, "\n");
+fclose(resfile);
 
 rmpath(fullfile(pwd, 'lib'));
 
+acc = [pacc, nacc, nonacc];
 end

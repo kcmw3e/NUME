@@ -8,9 +8,9 @@
 %   w = ["This", "is", "a", "string", "with", "a", "duplicate"];
 %   w = rm_fluff(w);
 %   w == ["string", "with", "duplicate"]; % given that flfuffwords.txt contains "this", "a", and "is"
-function words = rm_fluff(words)
+function nofluff = rm_fluff(tokens)
     arguments
-        words string;
+        tokens string;
     end
     
     persistent fluffwords; % fluffwords is always the same (see fluffwords.txt)
@@ -19,5 +19,10 @@ function words = rm_fluff(words)
         fluffwords = [tokenize(str); '']; % add empty string to fluff
     end
     
-    words = setdiff(words, fluffwords); % remove all the fluff words that don't have much meaning/use
+    nofluff = strings(size(tokens));
+    for i = 1:length(tokens)
+        t = tokens(i);
+        if (~any(t == fluffwords)); nofluff(i) = t; end
+    end
+    nofluff = nofluff(nofluff ~= ""); % don't keep empty places
 end
